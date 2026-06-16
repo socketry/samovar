@@ -116,11 +116,11 @@ module Samovar
 			
 			if command = @commands[input.first]
 				input.shift
-				context.complete_command(command, input)
+				return context.complete_command(command, input)
 			elsif @default
-				context.complete_command(@commands.fetch(@default), input)
+				return context.complete_command(@commands.fetch(@default), input)
 			else
-				Completion::Result.new(collected)
+				return Completion::Result.new(collected)
 			end
 		end
 		

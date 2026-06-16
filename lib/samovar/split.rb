@@ -115,7 +115,7 @@ module Samovar
 				suggestions << Completion::Suggestion.new(value: @marker, description: @description, type: :split)
 			end
 			
-			Completion::Result.new(collected + suggestions)
+			return Completion::Result.new(collected + suggestions)
 		end
 	end
 end

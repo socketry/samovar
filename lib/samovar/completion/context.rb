@@ -40,7 +40,7 @@ module Samovar
 					return result if result
 				end
 				
-				Result.new(collected)
+				return Result.new(collected)
 			end
 		end
 	end

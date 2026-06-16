@@ -193,16 +193,18 @@ module Samovar
 			result = consume(input, context)
 			return result if result
 			
-			return unless input.empty?
+			return nil unless input.empty?
 			
 			flags = suggestions(context.current)
 			
 			if context.current.start_with?("-") && flags.any?
-				Completion::Result.new(flags)
+				return Completion::Result.new(flags)
 			elsif context.current.empty?
 				collected.concat(flags)
-				nil
+				return nil
 			end
+			
+			return nil
 		end
 		
 		def consume(input, context)
@@ -222,7 +224,7 @@ module Samovar
 				end
 			end
 			
-			nil
+			return nil
 		end
 		
 		def suggestions(prefix)

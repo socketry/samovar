@@ -107,14 +107,16 @@ module Samovar
 			if @stop
 				input.shift while input.any? && !(@stop === input.first)
 				
-				return if @stop === context.current
+				return nil if @stop === context.current
 			else
 				input.clear
 			end
 			
 			if input.empty?
-				Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
+				return Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
 			end
+			
+			return nil
 		end
 	end
 end
