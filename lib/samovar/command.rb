@@ -45,10 +45,9 @@ module Samovar
 		# @parameter output [IO] The output stream for printing completion results.
 		# @returns [Completion::Result] The completion result.
 		def self.complete(input = ARGV, environment: ENV, output: $stdout)
-			result = Completion.complete(self, input, environment: environment)
-			result.print(output)
-			
-			return result
+			Completion.complete(self, input, environment: environment).tap do |result|
+				result.print(output)
+			end
 		end
 		
 		# Parse the command-line input and create a command instance.
