@@ -9,21 +9,6 @@ require_relative "completion/result"
 require_relative "completion/suggestion"
 
 module Samovar
-	class Command
-		# Complete the command-line input without executing the command.
-		# 
-		# @parameter input [Array(String)] The command-line arguments to complete.
-		# @parameter environment [Hash] The environment for completion callbacks.
-		# @parameter output [IO] The output stream for printing completion results.
-		# @returns [Completion::Result] The completion result.
-		def self.complete(input = ARGV, environment: ENV, output: $stdout)
-			result = Completion.complete(self, input, environment: environment)
-			result.print(output)
-			
-			return result
-		end
-	end
-	
 	# Shell completion support for Samovar commands.
 	module Completion
 		# Complete the command line for the given command class.

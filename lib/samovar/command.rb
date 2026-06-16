@@ -38,6 +38,19 @@ module Samovar
 			return nil
 		end
 		
+		# Complete the command-line input without executing the command.
+		# 
+		# @parameter input [Array(String)] The command-line arguments to complete.
+		# @parameter environment [Hash] The environment for completion callbacks.
+		# @parameter output [IO] The output stream for printing completion results.
+		# @returns [Completion::Result] The completion result.
+		def self.complete(input = ARGV, environment: ENV, output: $stdout)
+			result = Completion.complete(self, input, environment: environment)
+			result.print(output)
+			
+			return result
+		end
+		
 		# Parse the command-line input and create a command instance.
 		# 
 		# This is the low-level parsing primitive. It raises {Error} exceptions on parsing failures.
