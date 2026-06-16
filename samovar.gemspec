@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
 		"source_code_uri" => "https://github.com/ioquatix/samovar.git",
 	}
 	
-	spec.executables = ["samovar"]
 	spec.files = Dir.glob(["{bin,context,lib}/**/*", "*.md"], File::FNM_DOTMATCH, base: __dir__)
 	
 	spec.required_ruby_version = ">= 3.3"

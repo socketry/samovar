@@ -43,19 +43,6 @@ module Samovar
 			complete_command(command_class, words, context)
 		end
 		
-		def self.extract_index(environment = ENV)
-			::Protocol::Completion::Index.extract(environment)
-		end
-		
-		# Generate a shell completion script for an executable.
-		# 
-		# @parameter shell [String | Symbol] The shell name: bash, zsh, or fish.
-		# @parameter executable [String] The executable name.
-		# @returns [String] The shell completion script.
-		def self.script(shell:, executable:)
-			::Protocol::Completion::Shell.script(shell: shell, executable: executable)
-		end
-		
 		def self.complete_command(command_class, words, context)
 			complete_rows(command_class.table.merged, words.dup, context)
 		end
@@ -156,8 +143,5 @@ module Samovar
 			end
 		end
 		
-		def self.command_name(executable)
-			::Protocol::Completion::Shell.command_name(executable)
-		end
 	end
 end

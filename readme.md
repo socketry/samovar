@@ -38,19 +38,19 @@ class Command < Samovar::Command
 end
 ```
 
-Completion mode is enabled by setting `SAMOVAR_COMPLETE` to the zero-based cursor index in the application arguments:
+Completion mode is enabled by setting `COMPLETION_INDEX` to the zero-based cursor index in the application arguments:
 
 ``` shell
-SAMOVAR_COMPLETE=1 command --for
+COMPLETION_INDEX=1 command --for
 ```
 
-Applications can also generate shell adapter scripts:
+Shell adapter script generation and installation is provided by the `completion` gem:
 
 ``` shell
-samovar completion --command command
-samovar completion --command command --shell zsh
-samovar completion install --command command
-samovar completion install --command command --shell zsh
+completion --command command
+completion --command command --shell zsh
+completion install --command command
+completion install --command command --shell zsh
 ```
 
 ## Releases
