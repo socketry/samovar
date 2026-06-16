@@ -38,7 +38,7 @@ end
 Completion is exposed through a dedicated entry point:
 
 ``` ruby
-Command.complete(ARGV)
+Command.complete
 ```
 
 Shell adapter script generation and installation is provided by the `completion` gem. See the [Completion guide](https://ioquatix.github.io/samovar/guides/completion/index) for the complete setup, including the `completion-<command>` executable convention.

@@ -10,7 +10,7 @@ Commands expose a completion entry point alongside the normal execution entry po
 
 ~~~ ruby
 Application.call(ARGV)     # Parse and execute the command.
-Application.complete(ARGV) # Print completion candidates.
+Application.complete       # Print completion candidates.
 ~~~
 
 `complete` expects the command-line arguments to be truncated to the cursor. The final argument is the token being completed. When completing after a space, pass an empty string as the final argument:
@@ -141,7 +141,7 @@ The completion executable can be very small:
 
 require_relative "../lib/my/application"
 
-My::Application.complete(ARGV)
+My::Application.complete
 ~~~
 
 When the user completes a command by path, the shell adapter resolves the completion executable next to that command:
