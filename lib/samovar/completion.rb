@@ -3,13 +3,56 @@
 # Released under the MIT License.
 # Copyright, 2026, by Samuel Williams.
 
-require "protocol/completion"
-
 module Samovar
 	# Shell completion support for Samovar commands.
 	module Completion
-		Suggestion = ::Protocol::Completion::Candidate
-		Result = ::Protocol::Completion::Result
+		# A single completion suggestion.
+		Suggestion = Struct.new(:value, :description, :type, keyword_init: true) do
+			def to_s
+				value.to_s
+			end
+		end
+		
+		# A collection of completion suggestions.
+		class Result
+			include Enumerable
+			
+			def initialize(suggestions = [])
+				@suggestions = suggestions
+			end
+			
+			attr :suggestions
+			
+			alias candidates suggestions
+			
+			def each(&block)
+				@suggestions.each(&block)
+			end
+			
+			def empty?
+				@suggestions.empty?
+			end
+			
+			def +(other)
+				self.class.new(@suggestions + other.suggestions)
+			end
+			
+			def print(output = $stdout)
+				each do |suggestion|
+					output.puts [
+						escape(suggestion.value),
+						escape(suggestion.description),
+						escape(suggestion.type),
+					].join("\t")
+				end
+			end
+			
+			private
+			
+			def escape(value)
+				value.to_s.gsub(/[\t\r\n]/, " ")
+			end
+		end
 		
 		# The context provided to dynamic completion callbacks.
 		Context = Struct.new(:command_class, :argv, :index, :current, :row, :option, :environment, keyword_init: true)

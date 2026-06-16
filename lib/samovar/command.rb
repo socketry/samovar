@@ -30,10 +30,11 @@ module Samovar
 		# @returns [Object | Nil] The result of the command's call method, or nil if parsing/execution failed.
 		def self.call(input = ARGV, output: $stderr, completion_output: $stdout, completion: false)
 			if completion
-				request = Protocol::Completion::Request.extract(input)
-				index = request.arguments.size - 1
+				arguments = input.collect(&:to_s)
+				arguments = [""] if arguments.empty?
+				index = arguments.size - 1
 				
-				self.complete(request.arguments, index: index).print(completion_output)
+				self.complete(arguments, index: index).print(completion_output)
 				return true
 			end
 			

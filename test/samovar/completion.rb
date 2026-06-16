@@ -149,4 +149,14 @@ describe Samovar::Completion do
 		expect(result).to be == true
 		expect(output.string).to be == "leaf\tLeaf command.\tcommand\n"
 	end
+	
+	it "uses an empty token when completing with no arguments" do
+		output = StringIO.new
+		
+		result = CompletionTop.call([], completion: true, completion_output: output)
+		
+		expect(result).to be == true
+		expect(output.string).to be(:include?, "leaf\tLeaf command.\tcommand\n")
+		expect(output.string).to be(:include?, "--verbose\tEnable verbose output.\toption\n")
+	end
 end
