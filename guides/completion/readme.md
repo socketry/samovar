@@ -160,22 +160,28 @@ Shell adapter generation and installation is provided by the `completion` gem.
 Generate an adapter script:
 
 ~~~ bash
-$ completion generate --shell zsh falcon
+$ completion generate --shell zsh --command falcon
 ~~~
 
-Install an adapter script into the default directory for the current shell:
+Install a generic adapter script into the default directory for the current shell:
 
 ~~~ bash
-$ completion install falcon
+$ completion install
+~~~
+
+The generic adapter checks whether a matching `completion-<command>` executable exists before handling a command. You can install an adapter for a specific command instead:
+
+~~~ bash
+$ completion install --command falcon
 ~~~
 
 You can specify the shell and directory explicitly:
 
 ~~~ bash
-$ completion install --shell fish --directory ~/.config/fish/completions falcon
+$ completion install --shell fish --directory ~/.config/fish/completions --command falcon
 ~~~
 
-The installed adapter registers completion for the command name and calls the matching `completion-<command>` executable when completion is requested.
+The installed adapter calls the matching `completion-<command>` executable when completion is requested.
 
 ## Testing Completion
 
