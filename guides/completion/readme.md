@@ -84,7 +84,7 @@ end
 The provider receives a `Samovar::Completion::Context` with:
 
 - `current`: The token being completed.
-- `argv`: The full truncated argument list.
+- `arguments`: The full truncated argument list.
 - `environment`: The environment hash passed to `complete`.
 - `row`: The parser row requesting completions.
 - `option`: The option requesting completions, when completing an option value.

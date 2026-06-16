@@ -8,18 +8,18 @@ require_relative "result"
 module Samovar
 	module Completion
 		# The context provided to dynamic completion callbacks.
-		Context = Struct.new(:command_class, :argv, :current, :row, :option, :environment, keyword_init: true) do
-			def self.for(command_class, argv, environment: ENV)
+		Context = Struct.new(:command_class, :arguments, :current, :row, :option, :environment, keyword_init: true) do
+			def self.for(command_class, arguments, environment: ENV)
 				self.new(
 					command_class: command_class,
-					argv: argv,
-					current: argv.last || "",
+					arguments: arguments,
+					current: arguments.last || "",
 					environment: environment,
 				)
 			end
 			
 			def words
-				argv.take(argv.size - 1)
+				arguments.take(arguments.size - 1)
 			end
 			
 			def complete
