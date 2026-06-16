@@ -141,16 +141,10 @@ describe Samovar::Completion do
 		expect(output.string).to be == "leaf\tLeaf command.\tcommand\n"
 	end
 	
-	it "uses COMPLETION_INDEX as the cursor index in call" do
+	it "uses the final argument as the completion token in call" do
 		output = StringIO.new
 		
-		begin
-			ENV["COMPLETION_INDEX"] = "0"
-			result = CompletionTop.call(["le"], completion_output: output)
-			expect(ENV).not.to be(:key?, "COMPLETION_INDEX")
-		ensure
-			ENV.delete("COMPLETION_INDEX")
-		end
+		result = CompletionTop.call(["le"], completion: true, completion_output: output)
 		
 		expect(result).to be == true
 		expect(output.string).to be == "leaf\tLeaf command.\tcommand\n"

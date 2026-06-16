@@ -28,9 +28,12 @@ module Samovar
 		# @parameter input [Array(String)] The command-line arguments to parse.
 		# @parameter output [IO] The output stream for error messages.
 		# @returns [Object | Nil] The result of the command's call method, or nil if parsing/execution failed.
-		def self.call(input = ARGV, output: $stderr, completion_output: $stdout)
-			if request = Protocol::Completion::Request.extract(input)
-				self.complete(request.arguments, index: request.index).print(completion_output)
+		def self.call(input = ARGV, output: $stderr, completion_output: $stdout, completion: false)
+			if completion
+				request = Protocol::Completion::Request.extract(input)
+				index = request.arguments.size - 1
+				
+				self.complete(request.arguments, index: index).print(completion_output)
 				return true
 			end
 			
