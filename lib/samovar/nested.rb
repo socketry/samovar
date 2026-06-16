@@ -105,10 +105,10 @@ module Samovar
 		# @returns [Completion::Result | Nil] A final completion result, or nil to continue.
 		def complete(input, context, collected)
 			if input.empty?
-				result = Completion.nested_suggestions(self, context)
+				result = suggestions(context)
 				
 				if result.empty? && @default
-					return Completion::Result.new(collected) + Completion.complete_command(@commands.fetch(@default), [], context)
+					return Completion::Result.new(collected) + context.complete_command(@commands.fetch(@default))
 				end
 				
 				return Completion::Result.new(collected) + result
@@ -116,12 +116,22 @@ module Samovar
 			
 			if command = @commands[input.first]
 				input.shift
-				Completion.complete_command(command, input, context)
+				context.complete_command(command, input)
 			elsif @default
-				Completion.complete_command(@commands.fetch(@default), input, context)
+				context.complete_command(@commands.fetch(@default), input)
 			else
 				Completion::Result.new(collected)
 			end
+		end
+		
+		def suggestions(context)
+			suggestions = @commands.collect do |name, command_class|
+				next unless name.start_with?(context.current)
+				
+				Completion::Suggestion.new(value: name, description: command_class.description, type: :command)
+			end.compact
+			
+			Completion::Result.new(suggestions)
 		end
 		
 		# Generate usage information for this nested command.

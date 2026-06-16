@@ -103,7 +103,7 @@ module Samovar
 		# @returns [Completion::Result | Nil] A final completion result, or nil to continue.
 		def complete(input, context, collected)
 			if input.empty?
-				Completion::Result.new(collected) + Completion.provider_suggestions(@completions, context, row: self)
+				Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
 			elsif @pattern =~ input.first
 				input.shift
 				nil

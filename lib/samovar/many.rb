@@ -113,7 +113,7 @@ module Samovar
 			end
 			
 			if input.empty?
-				Completion::Result.new(collected) + Completion.provider_suggestions(@completions, context, row: self)
+				Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
 			end
 		end
 	end

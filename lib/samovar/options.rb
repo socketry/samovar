@@ -190,12 +190,12 @@ module Samovar
 		# @parameter collected [Array(Completion::Suggestion)] Suggestions collected so far.
 		# @returns [Completion::Result | Nil] A final completion result, or nil to continue.
 		def complete(input, context, collected)
-			result = Completion.consume_options(self, input, context)
+			result = consume(input, context)
 			return result if result
 			
 			return unless input.empty?
 			
-			flags = Completion.option_suggestions(self, context.current)
+			flags = suggestions(context.current)
 			
 			if context.current.start_with?("-") && flags.any?
 				Completion::Result.new(flags)
@@ -203,6 +203,36 @@ module Samovar
 				collected.concat(flags)
 				nil
 			end
+		end
+		
+		def consume(input, context)
+			while token = input.first
+				option = option_for(token)
+				break unless option
+				
+				flag = option.flag_for(token)
+				input.shift
+				
+				if flag && !flag.boolean?
+					if input.any?
+						input.shift
+					else
+						return option.suggestions(context, row: self)
+					end
+				end
+			end
+			
+			nil
+		end
+		
+		def suggestions(prefix)
+			flat_map do |option|
+				option.flags.completions.collect do |value|
+					next unless value.start_with?(prefix)
+					
+					Completion::Suggestion.new(value: value, description: option.description, type: :option)
+				end
+			end.compact
 		end
 		
 		# Generate a string representation for usage output.

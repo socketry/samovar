@@ -104,7 +104,7 @@ module Samovar
 		def complete(input, context, collected)
 			if offset = input.index(@marker)
 				input.shift(offset + 1)
-				return Completion::Result.new(collected) + Completion.provider_suggestions(@completions, context, row: self)
+				return Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
 			end
 			
 			return Completion::Result.new(collected) unless input.empty?

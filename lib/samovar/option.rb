@@ -5,6 +5,8 @@
 
 require_relative "flags"
 require_relative "error"
+require_relative "completion/provider"
+require_relative "completion/result"
 
 module Samovar
 	# Represents a single command-line option.
@@ -115,6 +117,22 @@ module Samovar
 		# @returns [Boolean] True if any flag for this option consumes a value.
 		def value?
 			@flags.any?{|flag| !flag.boolean?}
+		end
+		
+		def suggestions(context, row:)
+			suggestions = []
+			
+			if default?
+				suggestion = Completion::Provider.new([default], context, row: row, option: self).suggestions.first
+				
+				suggestions << suggestion if suggestion
+			end
+			
+			Completion::Provider.new(@completions, context, row: row, option: self).suggestions.each do |suggestion|
+				suggestions << suggestion unless suggestions.any?{|existing| existing.value == suggestion.value}
+			end
+			
+			Completion::Result.new(suggestions)
 		end
 		
 		# Coerce the result to the specified type.
