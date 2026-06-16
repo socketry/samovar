@@ -3,13 +3,13 @@
 # Released under the MIT License.
 # Copyright, 2026, by Samuel Williams.
 
-require "completion"
+require "protocol/completion"
 
 module Samovar
 	# Shell completion support for Samovar commands.
 	module Completion
-		Suggestion = ::Completion::Candidate
-		Result = ::Completion::Result
+		Suggestion = ::Protocol::Completion::Candidate
+		Result = ::Protocol::Completion::Result
 		
 		# The context provided to dynamic completion callbacks.
 		Context = Struct.new(:command_class, :argv, :index, :current, :row, :option, :environment, keyword_init: true)
@@ -44,7 +44,7 @@ module Samovar
 		end
 		
 		def self.extract_index(environment = ENV)
-			::Completion::Index.extract(environment)
+			::Protocol::Completion::Index.extract(environment)
 		end
 		
 		# Generate a shell completion script for an executable.
@@ -53,7 +53,7 @@ module Samovar
 		# @parameter executable [String] The executable name.
 		# @returns [String] The shell completion script.
 		def self.script(shell:, executable:)
-			::Completion::Shell.script(shell: shell, executable: executable)
+			::Protocol::Completion::Shell.script(shell: shell, executable: executable)
 		end
 		
 		def self.complete_command(command_class, words, context)
@@ -157,7 +157,7 @@ module Samovar
 		end
 		
 		def self.command_name(executable)
-			::Completion::Shell.command_name(executable)
+			::Protocol::Completion::Shell.command_name(executable)
 		end
 	end
 end

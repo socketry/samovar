@@ -6,7 +6,7 @@
 source "https://rubygems.org"
 
 gemspec
-gem "completion", path: "../completion"
+gem "protocol-completion", path: "../protocol-completion"
 
 group :maintenance, optional: true do
 	gem "bake-modernize"
