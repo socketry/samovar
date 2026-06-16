@@ -8,17 +8,12 @@ module Samovar
 		# Complete the command-line input without executing the command.
 		# 
 		# @parameter input [Array(String)] The command-line arguments to complete.
-		# @parameter index [Integer | Nil] The zero-based application argument cursor index.
 		# @parameter environment [Hash] The environment for completion callbacks.
-		# @parameter output [IO | Nil] The output stream for printing completion results.
+		# @parameter output [IO] The output stream for printing completion results.
 		# @returns [Completion::Result] The completion result.
-		def self.complete(input = ARGV, index: nil, environment: ENV, output: nil)
-			arguments = input.collect(&:to_s)
-			arguments = [""] if arguments.empty?
-			index = arguments.size - 1 unless index
-			
-			result = Completion.complete(self, arguments, index: index, environment: environment)
-			result.print(output) if output
+		def self.complete(input = ARGV, environment: ENV, output: $stdout)
+			result = Completion.complete(self, input, environment: environment)
+			result.print(output)
 			
 			return result
 		end
@@ -75,30 +70,21 @@ module Samovar
 		end
 		
 		# The context provided to dynamic completion callbacks.
-		Context = Struct.new(:command_class, :argv, :index, :current, :row, :option, :environment, keyword_init: true)
+		Context = Struct.new(:command_class, :argv, :current, :row, :option, :environment, keyword_init: true)
 		
 		# Complete the command line for the given command class.
 		# 
 		# @parameter command_class [Class] The command class to complete.
 		# @parameter argv [Array(String)] The application arguments.
-		# @parameter index [Integer] The zero-based application argument cursor index.
 		# @parameter environment [Hash] The environment for completion callbacks.
 		# @returns [Result] The completion result.
-		def self.complete(command_class, argv, index:, environment: ENV)
-			argv = argv.collect(&:to_s)
-			index = Integer(index)
-			
-			if index < 0 || index > argv.size
-				raise ArgumentError, "Completion index out of range: #{index}"
-			end
-			
-			current = index < argv.size ? argv[index] : ""
-			words = argv.take(index)
+		def self.complete(command_class, argv, environment: ENV)
+			current = argv.last || ""
+			words = argv.take(argv.size - 1)
 			
 			context = Context.new(
 				command_class: command_class,
 				argv: argv,
-				index: index,
 				current: current,
 				environment: environment,
 			)

@@ -53,88 +53,92 @@ describe Samovar::Completion do
 		result.collect(&:value)
 	end
 	
+	def complete(input, **options)
+		CompletionTop.complete(input, output: StringIO.new, **options)
+	end
+	
 	it "completes top-level option flags" do
-		result = CompletionTop.complete(["--ver"], index: 0)
+		result = complete(["--ver"])
 		
 		expect(values(result)).to be == ["--verbose"]
 	end
 	
 	it "completes top-level options and commands for an empty token" do
-		result = CompletionTop.complete([], index: 0)
+		result = complete([""])
 		
 		expect(values(result)).to be == ["--configuration", "-c", "--verbose", "-v", "leaf", "list"]
 	end
 	
 	it "completes nested command names" do
-		result = CompletionTop.complete(["le"], index: 0)
+		result = complete(["le"])
 		
 		expect(values(result)).to be == ["leaf"]
 	end
 	
 	it "completes nested command options" do
-		result = CompletionTop.complete(["leaf", "--no"], index: 1)
+		result = complete(["leaf", "--no"])
 		
 		expect(values(result)).to be == ["--no-color"]
 	end
 	
 	it "completes boolean flag variants" do
-		result = CompletionTop.complete(["leaf", "--"], index: 1)
+		result = complete(["leaf", "--"])
 		
 		expect(values(result)).to be(:include?, "--color")
 		expect(values(result)).to be(:include?, "--no-color")
 	end
 	
 	it "completes option values using static completions" do
-		result = CompletionTop.complete(["leaf", "--format", "j"], index: 2)
+		result = complete(["leaf", "--format", "j"])
 		
 		expect(values(result)).to be == ["json"]
 	end
 	
 	it "completes option defaults before static completions" do
-		result = CompletionTop.complete(["leaf", "--format"], index: 2)
+		result = complete(["leaf", "--format", ""])
 		
 		expect(values(result)).to be == ["text", "json", "yaml"]
 	end
 	
 	it "completes option values after a trailing option flag" do
-		result = CompletionTop.complete(["leaf", "--format"], index: 2)
+		result = complete(["leaf", "--format", ""])
 		
 		expect(values(result)).to be == ["text", "json", "yaml"]
 	end
 	
 	it "completes positional values using method completions" do
-		result = CompletionTop.complete(["leaf", "r"], index: 1)
+		result = complete(["leaf", "r"])
 		
 		expect(values(result)).to be == ["readme.md"]
 	end
 	
 	it "completes many values using callable completions" do
-		result = CompletionTop.complete(["leaf", "app.rb", "e"], index: 2, environment: {"EXTRA" => "env-extra"})
+		result = complete(["leaf", "app.rb", "e"], environment: {"EXTRA" => "env-extra"})
 		
 		expect(values(result)).to be == ["extra-a", "extra-b", "env-extra"]
 	end
 	
 	it "completes split marker before many consumes option-looking tokens" do
-		result = CompletionTop.complete(["leaf", "app.rb", "--"], index: 2)
+		result = complete(["leaf", "app.rb", "--"])
 		
 		expect(values(result)).to be == ["--"]
 	end
 	
 	it "completes split values after the marker" do
-		result = CompletionTop.complete(["leaf", "app.rb", "--", "--c"], index: 3)
+		result = complete(["leaf", "app.rb", "--", "--c"])
 		
 		expect(values(result)).to be == ["--child"]
 	end
 	
 	it "uses default nested command for option-looking completions" do
-		result = CompletionTop.complete(["--no"], index: 0)
+		result = complete(["--no"])
 		
 		expect(values(result)).to be == ["--no-color"]
 	end
 	
 	it "prints completion results as TSV" do
 		output = StringIO.new
-		result = CompletionTop.complete(["le"], index: 0)
+		result = complete(["le"])
 		
 		result.print(output)
 		
@@ -153,7 +157,7 @@ describe Samovar::Completion do
 	it "uses an empty token when completing with no arguments" do
 		output = StringIO.new
 		
-		result = CompletionTop.complete([], output: output)
+		result = CompletionTop.complete([""], output: output)
 		
 		expect(values(result)).to be(:include?, "leaf")
 		expect(output.string).to be(:include?, "leaf\tLeaf command.\tcommand\n")
