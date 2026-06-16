@@ -167,6 +167,7 @@ module Samovar
 		
 		def self.provider_suggestions(provider, context, row:, option: nil)
 			return Result.new unless provider
+			return native_suggestions(provider, context) if provider.is_a?(Symbol)
 			
 			context = context.dup
 			context.row = row
@@ -179,6 +180,17 @@ module Samovar
 				
 				suggestion if suggestion.value.to_s.start_with?(context.current)
 			end)
+		end
+		
+		def self.native_suggestions(provider, context)
+			case provider
+			when :path, :file
+				Result.new([Suggestion.new(value: context.current, description: "Path", type: :path)])
+			when :directory
+				Result.new([Suggestion.new(value: context.current, description: "Directory", type: :directory)])
+			else
+				Result.new
+			end
 		end
 		
 		def self.wrap_suggestion(value)

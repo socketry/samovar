@@ -15,6 +15,8 @@ class CompletionLeaf < Samovar::Command
 	
 	options do
 		option "--format <name>", "The output format.", default: "text", completions: ["json", "text", "yaml"]
+		option "--output <path>", "The output path.", completions: :path
+		option "--root <path>", "The root directory.", completions: :directory
 		option "--verbose | --quiet", "Verbosity of output for debugging.", key: :logging
 		option "--[no]-color", "Enable or disable color output.", default: true
 	end
@@ -92,6 +94,22 @@ describe Samovar::Completion do
 		result = complete(["leaf", "--format", "j"])
 		
 		expect(values(result)).to be == ["json"]
+	end
+	
+	it "requests native path completion for option values" do
+		result = complete(["leaf", "--output", "tmp/"])
+		suggestion = result.first
+		
+		expect(suggestion.value).to be == "tmp/"
+		expect(suggestion.type).to be == :path
+	end
+	
+	it "requests native directory completion for option values" do
+		result = complete(["leaf", "--root", "tmp/"])
+		suggestion = result.first
+		
+		expect(suggestion.value).to be == "tmp/"
+		expect(suggestion.type).to be == :directory
 	end
 	
 	it "completes option defaults before static completions" do
