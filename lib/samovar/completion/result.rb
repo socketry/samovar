@@ -32,9 +32,9 @@ module Samovar
 			def print(output = $stdout)
 				each do |suggestion|
 					output.puts [
+						escape(suggestion.type),
 						escape(suggestion.value),
 						escape(suggestion.description),
-						escape(suggestion.type),
 					].join("\t")
 				end
 			end

@@ -20,38 +20,28 @@ Please see the [project documentation](https://ioquatix.github.io/samovar/) for 
 
 ### Shell Auto-completion
 
-Samovar can complete command lines using the same command grammar used for parsing. Static completions are generated automatically for options, option aliases, boolean negation flags, and nested command names.
+Samovar can complete command lines using the same command grammar used for parsing. It can complete option flags, boolean flag variants, nested command names, option values, positional arguments, split arguments, and native shell path completions.
 
-You can provide value completions for options and positional arguments using `completions:`:
+You can provide completions for options and positional arguments using `completions:`:
 
 ``` ruby
 class Command < Samovar::Command
-	def self.path_completions(context)
-		Dir.glob("#{context.current}*")
-	end
-	
 	options do
 		option "--format <name>", "Output format.", completions: ["json", "text", "yaml"]
+		option "--output <path>", "Output path.", completions: :path
 	end
 	
-	one :path, "Path to process.", completions: method(:path_completions)
+	one :path, "Path to process.", completions: :file
 end
 ```
 
-Completion mode is enabled by setting `COMPLETION_INDEX` to the zero-based cursor index in the application arguments:
+Completion is exposed through a dedicated entry point:
 
-``` shell
-COMPLETION_INDEX=1 command --for
+``` ruby
+Command.complete(ARGV)
 ```
 
-Shell adapter script generation and installation is provided by the `completion` gem:
-
-``` shell
-completion --command command
-completion --command command --shell zsh
-completion install --command command
-completion install --command command --shell zsh
-```
+Shell adapter script generation and installation is provided by the `completion` gem. See the [Completion guide](https://ioquatix.github.io/samovar/guides/completion/index) for the complete setup, including the `completion-<command>` executable convention.
 
 ## Releases
 
