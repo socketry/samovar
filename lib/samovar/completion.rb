@@ -4,6 +4,26 @@
 # Copyright, 2026, by Samuel Williams.
 
 module Samovar
+	class Command
+		# Complete the command-line input without executing the command.
+		# 
+		# @parameter input [Array(String)] The command-line arguments to complete.
+		# @parameter index [Integer | Nil] The zero-based application argument cursor index.
+		# @parameter environment [Hash] The environment for completion callbacks.
+		# @parameter output [IO | Nil] The output stream for printing completion results.
+		# @returns [Completion::Result] The completion result.
+		def self.complete(input = ARGV, index: nil, environment: ENV, output: nil)
+			arguments = input.collect(&:to_s)
+			arguments = [""] if arguments.empty?
+			index = arguments.size - 1 unless index
+			
+			result = Completion.complete(self, arguments, index: index, environment: environment)
+			result.print(output) if output
+			
+			return result
+		end
+	end
+	
 	# Shell completion support for Samovar commands.
 	module Completion
 		# A single completion suggestion.

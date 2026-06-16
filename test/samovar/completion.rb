@@ -141,21 +141,21 @@ describe Samovar::Completion do
 		expect(output.string).to be == "leaf\tLeaf command.\tcommand\n"
 	end
 	
-	it "uses the final argument as the completion token in call" do
+	it "uses the final argument as the completion token" do
 		output = StringIO.new
 		
-		result = CompletionTop.call(["le"], completion: true, completion_output: output)
+		result = CompletionTop.complete(["le"], output: output)
 		
-		expect(result).to be == true
+		expect(values(result)).to be == ["leaf"]
 		expect(output.string).to be == "leaf\tLeaf command.\tcommand\n"
 	end
 	
 	it "uses an empty token when completing with no arguments" do
 		output = StringIO.new
 		
-		result = CompletionTop.call([], completion: true, completion_output: output)
+		result = CompletionTop.complete([], output: output)
 		
-		expect(result).to be == true
+		expect(values(result)).to be(:include?, "leaf")
 		expect(output.string).to be(:include?, "leaf\tLeaf command.\tcommand\n")
 		expect(output.string).to be(:include?, "--verbose\tEnable verbose output.\toption\n")
 	end

@@ -28,16 +28,7 @@ module Samovar
 		# @parameter input [Array(String)] The command-line arguments to parse.
 		# @parameter output [IO] The output stream for error messages.
 		# @returns [Object | Nil] The result of the command's call method, or nil if parsing/execution failed.
-		def self.call(input = ARGV, output: $stderr, completion_output: $stdout, completion: false)
-			if completion
-				arguments = input.collect(&:to_s)
-				arguments = [""] if arguments.empty?
-				index = arguments.size - 1
-				
-				self.complete(arguments, index: index).print(completion_output)
-				return true
-			end
-			
+		def self.call(input = ARGV, output: $stderr)
 			self.parse(input).call
 		rescue Error => error
 			error.command.print_usage(output: output) do |formatter|
@@ -57,16 +48,6 @@ module Samovar
 		# @raises [Error] If parsing fails.
 		def self.parse(input)
 			self.new(input)
-		end
-		
-		# Complete the command-line input without executing the command.
-		# 
-		# @parameter input [Array(String)] The command-line arguments to complete.
-		# @parameter index [Integer] The zero-based application argument cursor index.
-		# @parameter environment [Hash] The environment for completion callbacks.
-		# @returns [Completion::Result] The completion result.
-		def self.complete(input = ARGV, index:, environment: ENV)
-			Completion.complete(self, input, index: index, environment: environment)
 		end
 		
 		# Create a new command instance with the given arguments.
