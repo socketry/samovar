@@ -17,31 +17,7 @@ One of the other issues I had with existing frameworks is testability. Most fram
 Please see the [project documentation](https://ioquatix.github.io/samovar/) for more details.
 
   - [Getting Started](https://ioquatix.github.io/samovar/guides/getting-started/index) - This guide explains how to use `samovar` to build command-line tools and applications.
-
-### Shell Auto-completion
-
-Samovar can complete command lines using the same command grammar used for parsing. It can complete option flags, boolean flag variants, nested command names, option values, positional arguments, split arguments, and native shell path completions.
-
-You can provide completions for options and positional arguments using `completions:`:
-
-``` ruby
-class Command < Samovar::Command
-	options do
-		option "--format <name>", "Output format.", completions: ["json", "text", "yaml"]
-		option "--output <path>", "Output path.", completions: :path
-	end
-	
-	one :path, "Path to process.", completions: :file
-end
-```
-
-Completion is exposed through a dedicated entry point:
-
-``` ruby
-Command.complete
-```
-
-Shell adapter script generation and installation is provided by the `completion` gem. See the [Completion guide](https://ioquatix.github.io/samovar/guides/completion/index) for the complete setup, including the `completion-<command>` executable convention.
+  - [Completion](https://ioquatix.github.io/samovar/guides/completion/index) - This guide explains how to add shell completion to commands built with `samovar`.
 
 ## Releases
 
