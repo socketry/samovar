@@ -124,6 +124,10 @@ module Samovar
 			end
 		end
 		
+		# Complete nested command names for the current token.
+		# 
+		# @parameter context [Completion::Context] The completion context.
+		# @returns [Completion::Result] The matching nested command suggestions.
 		def suggestions(context)
 			suggestions = @commands.collect do |name, command_class|
 				next unless name.start_with?(context.current)

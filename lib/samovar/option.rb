@@ -119,6 +119,11 @@ module Samovar
 			@flags.any?{|flag| !flag.boolean?}
 		end
 		
+		# Complete values for this option.
+		# 
+		# @parameter context [Completion::Context] The completion context.
+		# @parameter row [Object] The parser row requesting completions.
+		# @returns [Completion::Result] The matching option value completions.
 		def suggestions(context, row:)
 			suggestions = []
 			

@@ -207,6 +207,11 @@ module Samovar
 			return nil
 		end
 		
+		# Consume option tokens before the current completion position.
+		# 
+		# @parameter input [Array(String)] Previously completed command-line arguments.
+		# @parameter context [Completion::Context] The completion context.
+		# @returns [Completion::Result | Nil] A completion result for an option value, or nil to continue.
 		def consume(input, context)
 			while token = input.first
 				option = option_for(token)
@@ -227,6 +232,10 @@ module Samovar
 			return nil
 		end
 		
+		# Complete option flags for the given prefix.
+		# 
+		# @parameter prefix [String] The option prefix being completed.
+		# @returns [Array(Completion::Suggestion)] The matching option flag suggestions.
 		def suggestions(prefix)
 			flat_map do |option|
 				option.flags.completions.collect do |value|
