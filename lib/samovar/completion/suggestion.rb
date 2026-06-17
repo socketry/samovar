@@ -7,6 +7,9 @@ module Samovar
 	module Completion
 		# A single completion suggestion.
 		Suggestion = Struct.new(:value, :description, :type, keyword_init: true) do
+			# Convert the suggestion to its value.
+			# 
+			# @returns [String] The suggestion value.
 			def to_s
 				value.to_s
 			end
