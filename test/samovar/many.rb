@@ -62,6 +62,16 @@ describe Samovar::Many do
 			expect(many_no_stop.parse(all_input)).to be == ["1", "2", "3", "--also"]
 			expect(all_input).to be(:empty?)
 		end
+		
+		it "clears previous input before completing" do
+			many_no_stop = subject.new(:items, "all items", stop: nil, completions: ["one", "two"])
+			context = Samovar::Completion::Context.for(Samovar::Command, ["previous", "t"])
+			input = ["previous"]
+			
+			result = many_no_stop.complete(input, context, [])
+			
+			expect(input).to be(:empty?)
+			expect(result.collect(&:value)).to be == ["two"]
+		end
 	end
 end
-
