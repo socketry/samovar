@@ -16,10 +16,13 @@ module Samovar
 			# @parameter environment [Hash] The environment for completion callbacks.
 			# @returns [Context] The completion context.
 			def self.for(command_class, arguments, environment: ENV)
+				arguments = arguments.dup
+				current = arguments.pop || ""
+				
 				return self.new(
 					command_class.table.merged,
 					arguments,
-					arguments.last || "",
+					current,
 					environment: environment,
 				)
 			end
@@ -27,7 +30,7 @@ module Samovar
 			# Initialize a new completion context.
 			#
 			# @parameter table [Table] The command table to complete.
-			# @parameter arguments [Array(String)] The truncated command-line arguments.
+			# @parameter arguments [Array(String)] The completed words before the current token.
 			# @parameter current [String] The token being completed.
 			# @parameter row [Object | Nil] The parser row whose value is being completed.
 			# @parameter environment [Hash] The environment for completion callbacks.
@@ -42,7 +45,7 @@ module Samovar
 			# @attribute [Table] The command table to complete.
 			attr :table
 			
-			# @attribute [Array(String)] The truncated command-line arguments.
+			# @attribute [Array(String)] The completed words before the current token.
 			attr :arguments
 			
 			# @attribute [String] The token being completed.
@@ -68,18 +71,11 @@ module Samovar
 				)
 			end
 			
-			# The completed words before the current token.
-			#
-			# @returns [Array(String)] The arguments before the token being completed.
-			def words
-				@arguments.take(@arguments.size - 1)
-			end
-			
 			# Complete the current command class.
 			#
 			# @returns [Result] The completion result.
 			def complete
-				complete_rows(@table, words)
+				complete_rows(@table, @arguments.dup)
 			end
 			
 			# Complete the given command class with completed words.
