@@ -111,7 +111,7 @@ module Samovar
 							input.first,
 							description: "Delegate completion",
 							type: :delegate,
-							index: context.words.index(@marker) + 1,
+							index: context.arguments.index(@marker) + 1,
 						),
 					])
 				end
