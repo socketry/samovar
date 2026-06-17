@@ -24,6 +24,10 @@ Please see the [project documentation](https://ioquatix.github.io/samovar/) for 
 
 Please see the [project releases](https://ioquatix.github.io/samovar/releases/index) for all releases.
 
+### v2.5.1
+
+  - Fix completion of empty arguments.
+
 ### v2.5.0
 
   - Introduce `Command#complete` which provides a hook for command completion logic, allowing developers to implement custom tab-completion behavior for their commands.

@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v2.5.1
 
   - Fix completion of empty arguments.
 
