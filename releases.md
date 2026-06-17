@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v2.5.0
 
   - Introduce `Command#complete` which provides a hook for command completion logic, allowing developers to implement custom tab-completion behavior for their commands.
 

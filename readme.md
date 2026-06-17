@@ -17,11 +17,16 @@ One of the other issues I had with existing frameworks is testability. Most fram
 Please see the [project documentation](https://ioquatix.github.io/samovar/) for more details.
 
   - [Getting Started](https://ioquatix.github.io/samovar/guides/getting-started/index) - This guide explains how to use `samovar` to build command-line tools and applications.
+
   - [Completion](https://ioquatix.github.io/samovar/guides/completion/index) - This guide explains how to add shell completion to commands built with `samovar`.
 
 ## Releases
 
 Please see the [project releases](https://ioquatix.github.io/samovar/releases/index) for all releases.
+
+### v2.5.0
+
+  - Introduce `Command#complete` which provides a hook for command completion logic, allowing developers to implement custom tab-completion behavior for their commands.
 
 ### v2.4.2
 

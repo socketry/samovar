@@ -12,3 +12,7 @@ files:
   title: Getting Started
   description: This guide explains how to use `samovar` to build command-line tools
     and applications.
+- path: completion.md
+  title: Completion
+  description: This guide explains how to add shell completion to commands built with
+    `samovar`.
