@@ -24,12 +24,13 @@ module Samovar
 		# Parse and execute the command with the given input.
 		# 
 		# This is the high-level entry point for CLI applications. It handles errors gracefully by printing usage and returning nil.
+		# The given arguments are passed to the parser, which consumes them as mutable input.
 		# 
-		# @parameter input [Array(String)] The command-line arguments to parse.
+		# @parameter arguments [Array(String)] The command-line arguments to parse.
 		# @parameter output [IO] The output stream for error messages.
 		# @returns [Object | Nil] The result of the command's call method, or nil if parsing/execution failed.
-		def self.call(input = ARGV, output: $stderr)
-			self.parse(input).call
+		def self.call(arguments = ARGV, output: $stderr)
+			self.parse(arguments).call
 		rescue Error => error
 			error.command.print_usage(output: output) do |formatter|
 				formatter.map(error)
@@ -39,13 +40,14 @@ module Samovar
 		end
 		
 		# Complete the command-line input without executing the command.
+		# The given arguments are treated as the stable command-line boundary; completion internals consume derived input arrays.
 		# 
-		# @parameter input [Array(String)] The command-line arguments to complete.
+		# @parameter arguments [Array(String)] The command-line arguments to complete.
 		# @parameter environment [Hash] The environment for completion callbacks.
 		# @parameter output [IO] The output stream for printing completion results.
 		# @returns [Completion::Result] The completion result.
-		def self.complete(input = ARGV, environment: ENV, output: $stdout)
-			Completion.complete(self, input, environment: environment).tap do |result|
+		def self.complete(arguments = ARGV, environment: ENV, output: $stdout)
+			Completion.complete(self, arguments, environment: environment).tap do |result|
 				result.print(output)
 			end
 		end
@@ -55,22 +57,22 @@ module Samovar
 		# This is the low-level parsing primitive. It raises {Error} exceptions on parsing failures.
 		# For CLI applications, use {call} instead which handles errors gracefully.
 		# 
-		# @parameter input [Array(String)] The command-line arguments to parse.
+		# @parameter arguments [Array(String)] The command-line arguments to parse.
 		# @returns [Command] The parsed command instance.
 		# @raises [Error] If parsing fails.
-		def self.parse(input)
-			self.new(input)
+		def self.parse(arguments)
+			self.new(arguments)
 		end
 		
 		# Create a new command instance with the given arguments.
 		# 
 		# This is a convenience method for creating command instances with explicit arguments.
 		# 
-		# @parameter input [Array(String)] The command-line arguments to parse.
+		# @parameter arguments [Array(String)] The command-line arguments to parse.
 		# @parameter options [Hash] Additional options to pass to the command.
 		# @returns [Command] The command instance.
-		def self.[](*input, **options)
-			self.new(input, **options)
+		def self.[](*arguments, **options)
+			self.new(arguments, **options)
 		end
 		
 		class << self

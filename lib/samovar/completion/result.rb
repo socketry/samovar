@@ -16,9 +16,8 @@ module Samovar
 				@suggestions = suggestions
 			end
 			
+			# @attribute [Array(Suggestion)] The suggestions in this result.
 			attr :suggestions
-			
-			alias candidates suggestions
 			
 			# Iterate over each suggestion.
 			# 
@@ -47,18 +46,8 @@ module Samovar
 			# @parameter output [IO] The output stream to write to.
 			def print(output = $stdout)
 				each do |suggestion|
-					output.puts [
-						escape(suggestion.type),
-						escape(suggestion.value),
-						escape(suggestion.description),
-					].join("\t")
+					output.puts suggestion.to_record
 				end
-			end
-			
-			private
-			
-			def escape(value)
-				value.to_s.gsub(/[\t\r\n]/, " ")
 			end
 		end
 	end

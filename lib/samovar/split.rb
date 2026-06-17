@@ -104,7 +104,19 @@ module Samovar
 		def complete(input, context, collected)
 			if offset = input.index(@marker)
 				input.shift(offset + 1)
-				return Completion::Result.new(collected) + Completion::Provider.new(@completions, context, row: self).suggestions
+				
+				if @completions == :executable && input.any?
+					return Completion::Result.new(collected + [
+						Completion::Suggestion.new(
+							input.first,
+							description: "Delegate completion",
+							type: :delegate,
+							index: context.words.index(@marker) + 1,
+						),
+					])
+				end
+				
+				return Completion::Result.new(collected) + Completion::Provider.new(context.with_row(self), @completions).suggestions
 			end
 			
 			return Completion::Result.new(collected) unless input.empty?
@@ -112,7 +124,7 @@ module Samovar
 			suggestions = []
 			
 			if @marker.start_with?(context.current)
-				suggestions << Completion::Suggestion.new(value: @marker, description: @description, type: :split)
+				suggestions << Completion::Suggestion.new(@marker, description: @description, type: :split)
 			end
 			
 			return Completion::Result.new(collected + suggestions)

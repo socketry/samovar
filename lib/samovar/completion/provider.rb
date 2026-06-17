@@ -12,65 +12,64 @@ module Samovar
 		class Provider
 			# Initialize a new completion provider.
 			# 
-			# @parameter provider [Array | Proc | Symbol | Nil] The static, dynamic, or native provider.
 			# @parameter context [Context] The completion context.
-			# @parameter row [Object] The parser row requesting completions.
-			# @parameter option [Option | Nil] The option requesting completions.
-			def initialize(provider, context, row:, option: nil)
-				@provider = provider
+			# @parameter completions [Array | Proc | Symbol | Nil] The static, dynamic, or native completions.
+			def initialize(context, completions)
 				@context = context
-				@row = row
-				@option = option
+				@completions = completions
 			end
 			
 			# Generate suggestions from the provider.
 			# 
 			# @returns [Result] The matching completion suggestions.
 			def suggestions
-				return Result.new unless @provider
-				return native_suggestions if @provider.is_a?(Symbol)
+				case @completions
+				when nil
+					Result.new
+				when Symbol
+					native_suggestions
+				else
+					matching_suggestions
+				end
+			end
+			
+			protected
+			
+			# Generate matching suggestions from static or dynamic completions.
+			#
+			# @returns [Result] The matching completion suggestions.
+			def matching_suggestions
+				values = @completions
 				
-				context = @context.dup
-				context.row = @row
-				context.option = @option
+				if values.respond_to?(:call)
+					values = values.call(@context)
+				end
 				
-				values = @provider.respond_to?(:call) ? @provider.call(context) : @provider
-				
-				Result.new(Array(values).filter_map do |value|
-					suggestion = wrap(value)
+				values = Array(values).filter_map do |value|
+					suggestion = Suggestion.wrap(value)
 					
-					suggestion if suggestion.value.to_s.start_with?(@context.current)
-				end)
+					suggestion if suggestion.start_with?(@context.current)
+				end
+				
+				return Result.new(values)
 			end
 			
 			# Generate native shell completion requests.
 			# 
 			# @returns [Result] The native completion request suggestions.
 			def native_suggestions
-				case @provider
+				case @completions
 				when :path, :file
-					Result.new([Suggestion.new(value: @context.current, description: "Path", type: :path)])
+					Result.new([Suggestion.new(@context.current, description: "Path", type: :path)])
 				when :directory
-					Result.new([Suggestion.new(value: @context.current, description: "Directory", type: :directory)])
+					Result.new([Suggestion.new(@context.current, description: "Directory", type: :directory)])
+				when :executable
+					Result.new([Suggestion.new(@context.current, description: "Executable", type: :executable)])
 				else
 					Result.new
 				end
 			end
 			
-			# Wrap a raw completion value in a suggestion.
-			# 
-			# @parameter value [Suggestion | Hash | Object] The value to wrap.
-			# @returns [Suggestion] The normalized suggestion.
-			def wrap(value)
-				case value
-				when Suggestion
-					value
-				when Hash
-					Suggestion.new(**value)
-				else
-					Suggestion.new(value: value)
-				end
-			end
 		end
 	end
 end

@@ -132,7 +132,7 @@ module Samovar
 			suggestions = @commands.collect do |name, command_class|
 				next unless name.start_with?(context.current)
 				
-				Completion::Suggestion.new(value: name, description: command_class.description, type: :command)
+				Completion::Suggestion.new(name, description: command_class.description, type: :command)
 			end.compact
 			
 			Completion::Result.new(suggestions)

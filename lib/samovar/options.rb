@@ -214,8 +214,7 @@ module Samovar
 		# @returns [Completion::Result | Nil] A completion result for an option value, or nil to continue.
 		def consume(input, context)
 			while token = input.first
-				option = option_for(token)
-				break unless option
+				break unless option = option_for(token)
 				
 				flag = option.flag_for(token)
 				input.shift
@@ -224,7 +223,7 @@ module Samovar
 					if input.any?
 						input.shift
 					else
-						return option.suggestions(context, row: self)
+						return option.suggestions(context)
 					end
 				end
 			end
@@ -241,7 +240,7 @@ module Samovar
 				option.flags.completions.collect do |value|
 					next unless value.start_with?(prefix)
 					
-					Completion::Suggestion.new(value: value, description: option.description, type: :option)
+					Completion::Suggestion.new(value, description: option.description, type: :option)
 				end
 			end.compact
 		end

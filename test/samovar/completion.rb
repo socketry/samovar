@@ -13,8 +13,15 @@ class CompletionLeaf < Samovar::Command
 		["app.rb", "readme.md", "test.rb"]
 	end
 	
+	format_completions = lambda do |context|
+		if context.row.is_a?(Samovar::Option) && context.row.key == :format
+			return ["json", "text", "yaml"]
+		end
+		return []
+	end
+	
 	options do
-		option "--format <name>", "The output format.", default: "text", completions: ["json", "text", "yaml"]
+		option "--format <name>", "The output format.", default: "text", completions: format_completions
 		option "--output <path>", "The output path.", completions: :path
 		option "--root <path>", "The root directory.", completions: :directory
 		option "--verbose | --quiet", "Verbosity of output for debugging.", key: :logging
@@ -23,7 +30,7 @@ class CompletionLeaf < Samovar::Command
 	
 	one :path, "The path to process.", completions: method(:path_completions)
 	many :extras, "Extra values.", completions: ->(context){["extra-a", "extra-b", context.environment["EXTRA"]].compact}
-	split :argv, "Additional arguments.", completions: ["--child"]
+	split :argv, "Additional arguments.", completions: :executable
 end
 
 class CompletionList < Samovar::Command
@@ -143,9 +150,23 @@ describe Samovar::Completion do
 	end
 	
 	it "completes split values after the marker" do
-		result = complete(["leaf", "app.rb", "--", "--c"])
+		result = complete(["leaf", "app.rb", "--", "ru"])
+		suggestion = result.first
 		
-		expect(values(result)).to be == ["--child"]
+		expect(suggestion.value).to be == "ru"
+		expect(suggestion.type).to be == :executable
+	end
+	
+	it "delegates split completion after the executable" do
+		output = StringIO.new
+		
+		result = CompletionTop.complete(["leaf", "app.rb", "--", "ruby", "--ver"], output: output)
+		suggestion = result.first
+		
+		expect(suggestion.value).to be == "ruby"
+		expect(suggestion.type).to be == :delegate
+		expect(suggestion.options).to be == {index: 3}
+		expect(output.string).to be == "delegate\truby\tDelegate completion\tindex=3\n"
 	end
 	
 	it "uses default nested command for option-looking completions" do
@@ -161,6 +182,64 @@ describe Samovar::Completion do
 		result.print(output)
 		
 		expect(output.string).to be == "command\tleaf\tLeaf command.\n"
+	end
+	
+	it "prints completion metadata as trailing TSV fields" do
+		output = StringIO.new
+		result = Samovar::Completion::Result.new([
+			Samovar::Completion::Suggestion.new(
+				"tmp\nfile",
+				description: "A\tpath",
+				type: :path,
+				suffix: "/",
+				empty: nil,
+			),
+		])
+		result.print(output)
+		expect(output.string).to be == "path\ttmp file\tA path\tsuffix=/\n"
+	end
+	
+	it "wraps existing suggestions" do
+		suggestion = Samovar::Completion::Suggestion.new("value", type: :value)
+		
+		expect(Samovar::Completion::Suggestion.wrap(suggestion)).to be == suggestion
+	end
+	
+	it "wraps hash suggestions" do
+		suggestion = Samovar::Completion::Suggestion.wrap(
+			value: "value",
+			description: "Description",
+			type: :value,
+			suffix: " ",
+		)
+		
+		expect(suggestion.value).to be == "value"
+		expect(suggestion.description).to be == "Description"
+		expect(suggestion.type).to be == :value
+		expect(suggestion.options).to be == {suffix: " "}
+	end
+	
+	it "returns no suggestions for missing completions" do
+		context = Samovar::Completion::Context.for(CompletionTop, [""])
+		provider = Samovar::Completion::Provider.new(context, nil)
+		
+		expect(provider.suggestions).to be(:empty?)
+	end
+	
+	it "returns no suggestions for unknown native completions" do
+		context = Samovar::Completion::Context.for(CompletionTop, [""])
+		provider = Samovar::Completion::Provider.new(context, :unknown)
+		
+		expect(provider.suggestions).to be(:empty?)
+	end
+	
+	it "returns collected suggestions after completing all rows" do
+		context = Samovar::Completion::Context.for(CompletionTop, [""])
+		table = [Object.new]
+		
+		result = context.complete_rows(table, [])
+		
+		expect(result).to be(:empty?)
 	end
 	
 	it "uses the final argument as the completion token" do

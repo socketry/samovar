@@ -22,8 +22,10 @@ Application.complete(["serve", "--bind", ""])
 Completion candidates are printed as tab-separated values:
 
 ~~~ text
-type	value	description
+type	value	description	key=value
 ~~~
+
+The first three fields are always the completion type, value, and description. Additional fields are optional metadata entries encoded as `key=value`.
 
 ## Static Completions
 
@@ -86,15 +88,14 @@ The provider receives a `Samovar::Completion::Context` with:
 - `current`: The token being completed.
 - `arguments`: The full truncated argument list.
 - `environment`: The environment hash passed to `complete`.
-- `row`: The parser row requesting completions.
-- `option`: The option requesting completions, when completing an option value.
+- `row`: The parser row whose value is being completed. This can be an option or a positional argument.
 
 Providers can return strings, hashes, or `Samovar::Completion::Suggestion` instances:
 
 ~~~ ruby
 option "--mode <name>", "The mode.",
 	completions: [
-		{value: "development", description: "Local development", type: :value},
+		{value: "development", description: "Local development", type: :value, suffix: " "},
 		{value: "production", description: "Production", type: :value}
 	]
 ~~~
@@ -119,8 +120,11 @@ Supported native providers:
 - `:path`: Complete files and directories using the shell.
 - `:file`: Alias for `:path`.
 - `:directory`: Complete directories using the shell.
+- `:executable`: Complete executable commands using the shell.
 
 Samovar does not inspect the filesystem for these providers. It emits a typed completion request, and the shell adapter translates it to native shell path completion.
+
+For split arguments, `:executable` completes the command immediately after the split marker. Once a command is present, Samovar emits a `delegate` completion with an `index` metadata field. The index is the zero-based argument index where delegated completion begins.
 
 ## Dedicated Completion Executable
 

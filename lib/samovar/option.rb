@@ -122,18 +122,18 @@ module Samovar
 		# Complete values for this option.
 		# 
 		# @parameter context [Completion::Context] The completion context.
-		# @parameter row [Object] The parser row requesting completions.
 		# @returns [Completion::Result] The matching option value completions.
-		def suggestions(context, row:)
+		def suggestions(context)
 			suggestions = []
+			context = context.with_row(self)
 			
 			if default?
-				suggestion = Completion::Provider.new([default], context, row: row, option: self).suggestions.first
+				suggestion = Completion::Provider.new(context, [default]).suggestions.first
 				
 				suggestions << suggestion if suggestion
 			end
 			
-			Completion::Provider.new(@completions, context, row: row, option: self).suggestions.each do |suggestion|
+			Completion::Provider.new(context, @completions).suggestions.each do |suggestion|
 				suggestions << suggestion unless suggestions.any?{|existing| existing.value == suggestion.value}
 			end
 			
