@@ -284,4 +284,14 @@ describe Samovar::Completion do
 		expect(output.string).to be(:include?, "command\tleaf\tLeaf command.\n")
 		expect(output.string).to be(:include?, "option\t--verbose\tEnable verbose output.\n")
 	end
+	
+	it "completes with no arguments" do
+		output = StringIO.new
+		
+		result = CompletionTop.complete([], output: output)
+		
+		expect(values(result)).to be(:include?, "leaf")
+		expect(output.string).to be(:include?, "command\tleaf\tLeaf command.\n")
+		expect(output.string).to be(:include?, "option\t--verbose\tEnable verbose output.\n")
+	end
 end

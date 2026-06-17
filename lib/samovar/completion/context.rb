@@ -72,6 +72,8 @@ module Samovar
 			#
 			# @returns [Array(String)] The arguments before the token being completed.
 			def words
+				return [] if @arguments.empty?
+				
 				@arguments.take(@arguments.size - 1)
 			end
 			
