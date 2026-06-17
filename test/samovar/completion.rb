@@ -103,6 +103,12 @@ describe Samovar::Completion do
 		expect(values(result)).to be == ["json"]
 	end
 	
+	it "continues completion after consuming option values" do
+		result = complete(["--configuration", "development", ""])
+		
+		expect(values(result)).to be == ["--configuration", "-c", "--verbose", "-v", "leaf", "list"]
+	end
+	
 	it "requests native path completion for option values" do
 		result = complete(["leaf", "--output", "tmp/"])
 		suggestion = result.first
@@ -173,6 +179,24 @@ describe Samovar::Completion do
 		result = complete(["--no"])
 		
 		expect(values(result)).to be == ["--no-color"]
+	end
+	
+	it "uses default nested command for unmatched command words" do
+		result = complete(["unknown", ""])
+		
+		expect(values(result)).to be == ["extra-a", "extra-b"]
+	end
+	
+	it "returns collected suggestions for unmatched nested commands without default" do
+		nested = Samovar::Nested.new(:command, {"list" => CompletionList})
+		context = Samovar::Completion::Context.for(CompletionTop, ["unknown", ""])
+		collected = [
+			Samovar::Completion::Suggestion.new("--verbose", type: :option)
+		]
+		
+		result = nested.complete(["unknown"], context, collected)
+		
+		expect(values(result)).to be == ["--verbose"]
 	end
 	
 	it "prints completion results as TSV" do

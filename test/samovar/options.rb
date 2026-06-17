@@ -20,6 +20,16 @@ describe Samovar::Options do
 		expect(values).to be == {x: 2}
 	end
 	
+	it "lists option completions" do
+		expect(options.completions).to be == ["-x", "-y", "--symbol"]
+	end
+	
+	it "knows whether an option consumes a value" do
+		option = options.option_for("-x")
+		
+		expect(option).to be(:value?)
+	end
+	
 	it "should resolve callable defaults" do
 		count = 0
 		

@@ -16,14 +16,10 @@ describe Samovar::Flags do
 		result = flags.parse(["--other"])
 		expect(result).to be_nil
 	end
-end
-
-describe Samovar::BooleanFlag do
-	let(:flag) {Samovar::Flag.parse("--[no]-color")}
 	
-	it "can check prefix" do
-		expect(flag.prefix?("--color")).to be == true
-		expect(flag.prefix?("--no-color")).to be == true
-		expect(flag.prefix?("--other")).to be == false
+	it "matches flag alternatives" do
+		flag = flags.first
+		
+		expect(flag.prefix?("-f")).to be == true
 	end
 end

@@ -32,6 +32,15 @@ describe Samovar::One do
 		expect(input).to be == ["3", "4"]
 	end
 	
+	it "completes with no suggestions if input does not match" do
+		one = subject.new(:thing, "a thing", pattern: /^valid$/, completions: ["valid"])
+		context = Samovar::Completion::Context.for(Samovar::Command, ["invalid", ""])
+		
+		result = one.complete(["invalid"], context, [])
+		
+		expect(result).to be(:empty?)
+	end
+	
 	with "required field" do
 		let(:required_one) {subject.new(:thing, "a thing", required: true)}
 		
@@ -54,4 +63,3 @@ describe Samovar::One do
 		end
 	end
 end
-
