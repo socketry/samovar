@@ -8,6 +8,8 @@ module Samovar
 	# 
 	# Flags parse text like `-f/--flag <value>` into individual flag parsers.
 	class Flags
+		include Enumerable
+		
 		# Initialize a new flags parser.
 		# 
 		# @parameter text [String] The flags specification string (e.g., `-f/--flag <value>`).
@@ -22,6 +24,21 @@ module Samovar
 		# @yields {|flag| ...} Each flag in the collection.
 		def each(&block)
 			@ordered.each(&block)
+		end
+		
+		# Find the flag that matches the given token.
+		# 
+		# @parameter token [String] The token to match.
+		# @returns [Flag | Nil] The matching flag.
+		def flag_for(token)
+			@ordered.find{|flag| flag.prefix?(token)}
+		end
+		
+		# The possible flag prefixes for completion.
+		# 
+		# @returns [Array(String)] The flag prefixes and alternatives.
+		def completions
+			@ordered.flat_map(&:completions)
 		end
 		
 		# Get the first flag.
@@ -131,6 +148,21 @@ module Samovar
 		# @returns [Boolean] False by default.
 		def boolean?
 			false
+		end
+		
+		# Check if the token matches this flag.
+		# 
+		# @parameter token [String] The token to check.
+		# @returns [Boolean] True if the token matches.
+		def prefix?(token)
+			@prefix == token or @alternatives&.include?(token)
+		end
+		
+		# The possible flag prefixes for completion.
+		# 
+		# @returns [Array(String)] The flag prefix and alternatives.
+		def completions
+			[@prefix, *@alternatives]
 		end
 	end
 	

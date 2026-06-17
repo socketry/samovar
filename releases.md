@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Introduce `Command#complete` which provides a hook for command completion logic, allowing developers to implement custom tab-completion behavior for their commands.
+
 ## v2.4.2
 
   - Drop dependency on `mapping` gem.

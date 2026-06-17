@@ -3,7 +3,7 @@
 # Released under the MIT License.
 # Copyright, 2017-2026, by Samuel Williams.
 
-require "samovar/options"
+require "samovar"
 
 describe Samovar::Options do
 	let(:options) do
@@ -18,6 +18,25 @@ describe Samovar::Options do
 	it "should set defaults" do
 		values = options.parse([], nil, nil)
 		expect(values).to be == {x: 2}
+	end
+	
+	it "should resolve callable defaults" do
+		count = 0
+		
+		options = subject.parse do
+			option "--value <value>", "The value", default: ->{count += 1}
+		end
+		
+		expect(options.parse([], nil, nil)).to be == {value: 1}
+		expect(options.parse([], nil, nil)).to be == {value: 2}
+	end
+	
+	it "should preserve false defaults" do
+		options = subject.parse do
+			option "--enabled", "Whether enabled", default: false
+		end
+		
+		expect(options.parse([], nil, nil)).to be == {enabled: false}
 	end
 	
 	it "should preserve current values" do
@@ -161,4 +180,3 @@ describe Samovar::Options do
 		end
 	end
 end
-

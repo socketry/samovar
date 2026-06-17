@@ -3,6 +3,8 @@
 # Released under the MIT License.
 # Copyright, 2016-2026, by Samuel Williams.
 
+require_relative "completion"
+
 module Samovar
 	# Represents nested sub-commands in a command.
 	# 
@@ -85,14 +87,55 @@ module Samovar
 				name = input.shift
 				
 				# puts "Instantiating #{command} with #{input}"
-				command.new(input, name: name, parent: parent)
+				command.new(input, name: name, parent: parent, output: parent&.output)
 			elsif default
 				return default
 			elsif @default
-				@commands[@default].new(input, name: @default, parent: parent)
+				@commands[@default].new(input, name: @default, parent: parent, output: parent&.output)
 			elsif @required
 				raise MissingValueError.new(parent, @key)
 			end
+		end
+		
+		# Complete nested command names or continue into a selected command.
+		# 
+		# @parameter input [Array(String)] Previously completed command-line arguments.
+		# @parameter context [Completion::Context] The completion context.
+		# @parameter collected [Array(Completion::Suggestion)] Suggestions collected so far.
+		# @returns [Completion::Result | Nil] A final completion result, or nil to continue.
+		def complete(input, context, collected)
+			if input.empty?
+				result = suggestions(context)
+				
+				if result.empty? && @default
+					return Completion::Result.new(collected) + context.complete_command(@commands.fetch(@default))
+				end
+				
+				return Completion::Result.new(collected) + result
+			end
+			
+			if command = @commands[input.first]
+				input.shift
+				return context.complete_command(command, input)
+			elsif @default
+				return context.complete_command(@commands.fetch(@default), input)
+			else
+				return Completion::Result.new(collected)
+			end
+		end
+		
+		# Complete nested command names for the current token.
+		# 
+		# @parameter context [Completion::Context] The completion context.
+		# @returns [Completion::Result] The matching nested command suggestions.
+		def suggestions(context)
+			suggestions = @commands.collect do |name, command_class|
+				next unless name.start_with?(context.current)
+				
+				Completion::Suggestion.new(name, description: command_class.description, type: :command)
+			end.compact
+			
+			Completion::Result.new(suggestions)
 		end
 		
 		# Generate usage information for this nested command.

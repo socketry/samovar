@@ -131,6 +131,13 @@ describe Samovar::Nested do
 		expect(outer.command.parent).to be_equal(outer)
 	end
 	
+	it "passes output to nested commands" do
+		output = StringIO.new
+		outer = Outer.new(["inner-a"], output: output)
+		
+		expect(outer.command.output).to be_equal(output)
+	end
+	
 	# it "should parse help option at outer level" do
 	# 	outer = Outer['inner-a', '--help']
 	# 	expect(outer.options[:help]).to_be truthy
