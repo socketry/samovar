@@ -1,6 +1,8 @@
 # Releases
 
-## v2.4.1
+## v2.4.2
+
+  - Drop dependency on `mapping` gem.
 
 ## v2.4.0
 

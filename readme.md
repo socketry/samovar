@@ -23,7 +23,9 @@ Please see the [project documentation](https://ioquatix.github.io/samovar/) for 
 
 Please see the [project releases](https://ioquatix.github.io/samovar/releases/index) for all releases.
 
-### v2.4.1
+### v2.4.2
+
+  - Drop dependency on `mapping` gem.
 
 ### v2.4.0
 
