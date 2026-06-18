@@ -194,5 +194,24 @@ describe Samovar::Command do
 			expect(usage).to be(:start_with?, "mycommand")
 		end
 	end
+	
+	with "equals sign option syntax" do
+		let(:command_class) do
+			Class.new(Samovar::Command) do
+				self.description = "A command that accepts a configuration file."
+				
+				options do
+					option "--config <path>", "The configuration file path."
+					option "--[no]-color", "Enable or disable color output."
+				end
+			end
+		end
+		
+		it "raises for an unknown option in the equals sign form" do
+			expect do
+				command_class.parse(["--unknown=value"])
+			end.to raise_exception(Samovar::InvalidInputError)
+		end
+	end
 end
 

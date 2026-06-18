@@ -222,12 +222,23 @@ module Samovar
 					input.shift
 					return key
 				end
+			elsif input.first&.include?("=")
+				# The `--flag=value` form. Split on the first `=` only, so the value
+				# may itself contain `=` (e.g. `--option=a=b`):
+				flag, value = input.first.split("=", 2)
+				if prefix?(flag)
+					input.shift
+					return @value ? value : key
+				end
 			end
 		end
 	end
 	
 	# Represents a boolean flag with `--flag` and `--no-flag` variants.
 	class BooleanFlag < Flag
+		# Values which are treated as false in the `--flag=value` form (compared case-insensitively).
+		FALSE_VALUES = ["false", "no", "off", "0"].freeze
+		
 		# Initialize a new boolean flag.
 		# 
 		# @parameter text [String] The full flag specification text.
@@ -261,6 +272,15 @@ module Samovar
 			elsif input.first == @negated
 				input.shift
 				return false
+			elsif input.first&.include?("=")
+				# The `--flag=value` form, e.g. `--color=false`:
+				flag, value = input.first.split("=", 2)
+				if flag == @prefix || flag == @negated
+					input.shift
+					# A false-like value disables the flag; the negated prefix inverts it:
+					false_value = FALSE_VALUES.include?(value.downcase)
+					return flag == @negated ? false_value : !false_value
+				end
 			end
 		end
 	end

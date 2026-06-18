@@ -22,4 +22,20 @@ describe Samovar::Flags do
 		
 		expect(flag.prefix?("-f")).to be == true
 	end
+	
+	it "ignores tokens that do not match the prefix" do
+		input = ["--other=true"]
+		expect(flag.parse(input)).to be_nil
+		expect(input).to be == ["--other=true"]
+	end
+end
+
+describe Samovar::ValueFlag do
+	let(:flag) {Samovar::Flag.parse("--config <path>")}
+	
+	it "ignores tokens that do not match the prefix" do
+		input = ["--other=value"]
+		expect(flag.parse(input)).to be_nil
+		expect(input).to be == ["--other=value"]
+	end
 end

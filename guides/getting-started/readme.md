@@ -93,6 +93,13 @@ application = Application.new(["--things", "x,y,z"])
 application.options[:things] # ['x', 'y', 'z']
 ~~~
 
+Options can also be joined to their value with an equals sign. The token is split on the first `=` only, so the value may itself contain `=`:
+
+~~~ ruby
+application = Application.new(["--frobulate=a=b"])
+application.options[:frobulate] # 'a=b'
+~~~
+
 ### Nested Commands
 
 You can create sub-commands that are nested within your main application:

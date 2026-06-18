@@ -12,6 +12,8 @@
 
   - Drop dependency on `mapping` gem.
 
+  - Add support for options provided with an equals sign, e.g. `--config=path`. Both `--config path` and `--config=path` are accepted, and the token is split on the first `=` only, so the value may itself contain `=`.
+
 ## v2.4.0
 
   - Fix option parsing and validation: required options are now detected correctly and raise `Samovar::MissingValueError` when missing.
